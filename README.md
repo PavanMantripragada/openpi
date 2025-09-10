@@ -122,7 +122,7 @@ We will fine-tune the $\pi_0$-FAST model on the [Libero dataset](https://libero-
 We provide a minimal example script for converting Libero data to a LeRobot dataset in [`examples/libero/convert_libero_data_to_lerobot.py`](examples/libero/convert_libero_data_to_lerobot.py). You can easily modify it to convert your own data! You can download the raw Libero dataset from [here](https://huggingface.co/datasets/openvla/modified_libero_rlds), and run the script with:
 
 ```bash
-uv run examples/libero/convert_libero_data_to_lerobot.py --data_dir /path/to/your/libero/data
+uv run examples/ego_mimic/convert_ego_mimic_data_to_lerobot.py --data_dir third_party/ego_mimic/data_joint_angles_pouring_train
 ```
 
 ### 2. Defining training configs and running training
@@ -138,13 +138,13 @@ We provide example fine-tuning configs for both, [π₀](src/openpi/training/con
 Before we can run training, we need to compute the normalization statistics for the training data. Run the script below with the name of your training config:
 
 ```bash
-uv run scripts/compute_norm_stats.py --config-name pi0_fast_libero
+uv run scripts/compute_norm_stats.py --config-name pi0_fast_ego_mimic_low_mem_finetune
 ```
 
 Now we can kick off training with the following command (the `--overwrite` flag is used to overwrite existing checkpoints if you rerun fine-tuning with the same config):
 
 ```bash
-XLA_PYTHON_CLIENT_MEM_FRACTION=0.9 uv run scripts/train.py pi0_fast_libero --exp-name=my_experiment --overwrite
+XLA_PYTHON_CLIENT_MEM_FRACTION=0.9 uv run scripts/train.py pi0_fast_ego_mimic_low_mem_finetune --exp-name=joint_angles_pouring --overwrite
 ```
 
 The command will log training progress to the console and save checkpoints to the `checkpoints` directory. You can also monitor training progress on the Weights & Biases dashboard. For maximally using the GPU memory, set `XLA_PYTHON_CLIENT_MEM_FRACTION=0.9` before running training -- this enables JAX to use up to 90% of the GPU memory (vs. the default of 75%).

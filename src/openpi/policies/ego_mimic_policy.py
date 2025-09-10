@@ -10,9 +10,9 @@ from openpi.models import model as _model
 def make_ego_mimic_example() -> dict:
     """Creates a random input example for the ego_mimic policy."""
     return {
-        "observation/state": np.random.rand(8),
-        "observation/image": np.random.randint(256, size=(224, 224, 3), dtype=np.uint8),
-        "observation/wrist_image": np.random.randint(256, size=(224, 224, 3), dtype=np.uint8),
+        "observation/state": np.random.rand(7),
+        "observation/image": np.random.randint(256, size=(1242, 2208, 3), dtype=np.uint8),
+        "observation/wrist_image": np.random.randint(256, size=(1242, 2208, 3), dtype=np.uint8),
         "prompt": "do something",
     }
 
@@ -71,13 +71,15 @@ class EgoMimicInputs(transforms.DataTransformFn):
             "state": state,
             "image": {
                 "base_0_rgb": base_image,
-                "left_wrist_0_rgb": wrist_image,
+                # Pad any non-existent images with zero-arrays of the appropriate shape.
+                "left_wrist_0_rgb": np.zeros_like(base_image),
                 # Pad any non-existent images with zero-arrays of the appropriate shape.
                 "right_wrist_0_rgb": np.zeros_like(base_image),
             },
             "image_mask": {
                 "base_0_rgb": np.True_,
-                "left_wrist_0_rgb": np.True_,
+                # Mask any non-existent images with False (if ``mask_padding`` is True).
+                "left_wrist_0_rgb": np.False_ if mask_padding else np.True_,
                 # Mask any non-existent images with False (if ``mask_padding`` is True).
                 "right_wrist_0_rgb": np.False_ if mask_padding else np.True_,
             },
